@@ -33,6 +33,8 @@ public final class Gatherers {
 	///
 	/// The returned [Gatherer] will consume the elements eagerly and will only start outputting elements once reaching
 	/// the end of the [Stream]. This means that this operation will not complete on infinite streams.
+	/// @param <T> the type of elements in the [Stream].
+	/// @return a [Gatherer] which reorders the elements of a stream in random order.
 	public static <T> Gatherer<T, ?, T> randomOrder() {
 		return randomOrder(RandomGenerator.getDefault());
 	}
@@ -56,6 +58,7 @@ public final class Gatherers {
 	/// @param <T>           the type of elements in the [Stream].
 	/// @param <O>           the type of elements in `otherElements`.
 	/// @param <R>           the type of combined elements produced by `zipFunction`.
+	/// @return a [Gatherer] that combines the elements of stream together with the elements of another [Iterable].
 	public static <T, O, R> Gatherer<T, ?, R> zip(Iterable<O> otherElements,
 	                                              BiFunction<? super T, ? super O, ? extends R> zipFunction) {
 		return new ZippingGatherer<>(otherElements::iterator, zipFunction);

@@ -15,6 +15,7 @@
  */
 package eu.jbeernink.util.stream;
 
+/// A collection of useful [java.util.stream.Collector] implementations.
 public final class Collectors {
 
 	private Collectors() {}

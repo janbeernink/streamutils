@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/// Module containing useful [java.util.stream.Stream] utilities.
 module eu.jbeernink.util.stream {
 	exports eu.jbeernink.util.stream;
 }
