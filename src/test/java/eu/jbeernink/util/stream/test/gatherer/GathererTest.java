@@ -17,6 +17,7 @@ package eu.jbeernink.util.stream.test.gatherer;
 
 import static eu.jbeernink.util.stream.Gatherers.filterInstancesOf;
 import static eu.jbeernink.util.stream.Gatherers.groupWhile;
+import static eu.jbeernink.util.stream.Gatherers.interleave;
 import static eu.jbeernink.util.stream.Gatherers.randomOrder;
 import static eu.jbeernink.util.stream.Gatherers.zip;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,6 +27,7 @@ import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import eu.jbeernink.util.stream.testing.SequenceRandomOrderGenerator;
@@ -88,5 +90,85 @@ public class GathererTest {
 		                                  .toList();
 
 		assertEquals(List.of(List.of("a", "b", "c"), List.of("AA"), List.of("d"), List.of("BB", "CC")), groups);
+	}
+
+	@Nested
+	@DisplayName("interleave(Stream<? extends T>)")
+	class InterleaveStream {
+
+		@Test
+		@DisplayName("returns a Gatherer that interleaves the elements of another Stream.")
+		void returnsInterleaveGatherer() {
+			Stream<String> interleavedStream = Stream.of("a", "b");
+
+			List<String> elements = Stream.of("1", "2").gather(interleave(interleavedStream))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "2", "b"), elements);
+		}
+
+		@Test
+		@DisplayName(
+				"with an interleaved Stream with fewer elements, returns a Gatherer that keeps iterating on the current stream.")
+		void withFewerElements_keepsIteratingOnCurrentStream() {
+			Stream<String> interleavedStream = Stream.of("a", "b");
+
+			List<String> elements = Stream.of("1", "2", "3", "4").gather(interleave(interleavedStream))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "2", "b", "3", "4"), elements);
+		}
+
+		@Test
+		@DisplayName(
+				"with an interleaved Stream with more elements, returns a Gatherer that keeps on accepting elements from the other Stream.")
+		void withMoreElements_keepsOnAcceptingElementsFromOtherStream() {
+			Stream<String> interleavedStream = Stream.of("a", "b", "c", "d");
+
+			List<String> elements = Stream.of("1").gather(interleave(interleavedStream))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "b", "c", "d"), elements);
+		}
+	}
+
+	@Nested
+	@DisplayName("interleave(Iterable<? extends T>)")
+	class InterleaveIterable {
+
+		@Test
+		@DisplayName("returns a Gatherer that interleaves the elements of an Iterable.")
+		void returnsInterleaveGatherer() {
+			List<String> interleavedIterable = List.of("a", "b");
+
+			List<String> elements = Stream.of("1", "2").gather(interleave(interleavedIterable))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "2", "b"), elements);
+		}
+
+		@Test
+		@DisplayName(
+				"with an interleaved Iterable with fewer elements, returns a Gatherer that keeps iterating on the current stream.")
+		void withFewerElements_keepsIteratingOnCurrentStream() {
+			List<String> interleavedIterable = List.of("a", "b");
+
+			List<String> elements = Stream.of("1", "2", "3", "4").gather(interleave(interleavedIterable))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "2", "b", "3", "4"), elements);
+		}
+
+		@Test
+		@DisplayName(
+				"with an interleaved Iterable with more elements, returns a Gatherer that keeps iterating on the Iterable.")
+		void withMoreElements_keepsOnAcceptingElementsFromOtherStream() {
+			List<String> interleavedIterable = List.of("a", "b", "c", "d");
+
+			List<String> elements = Stream.of("1").gather(interleave(interleavedIterable))
+			                              .toList();
+
+			assertEquals(List.of("1", "a", "b", "c", "d"), elements);
+		}
 	}
 }

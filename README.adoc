@@ -1,0 +1,6 @@
+= StreamUtils
+-----
+-----
+Small collection of java.util.Stream related utilities.
+
+This mostly started as an experiment for using Java 24's new Gatherers.

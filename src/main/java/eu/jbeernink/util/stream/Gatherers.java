@@ -23,6 +23,7 @@ import java.util.random.RandomGenerator;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
+import eu.jbeernink.util.stream.gatherer.InterleavingGatherer;
 import eu.jbeernink.util.stream.gatherer.RandomOrderGatherer;
 import eu.jbeernink.util.stream.gatherer.ZippingGatherer;
 
@@ -33,6 +34,7 @@ public final class Gatherers {
 	///
 	/// The returned [Gatherer] will consume the elements eagerly and will only start outputting elements once reaching
 	/// the end of the [Stream]. This means that this operation will not complete on infinite streams.
+	///
 	/// @param <T> the type of elements in the [Stream].
 	/// @return a [Gatherer] which reorders the elements of a stream in random order.
 	public static <T> Gatherer<T, ?, T> randomOrder() {
@@ -75,6 +77,38 @@ public final class Gatherers {
 	public static <T, O, R> Gatherer<T, ?, R> zip(Stream<? extends O> otherStream,
 	                                              BiFunction<? super T, ? super O, ? extends R> zipFunction) {
 		return new ZippingGatherer<>(otherStream::iterator, zipFunction);
+	}
+
+	/// Returns a [Gatherer] that will interleave elements from another [Stream] into the current [Stream].
+	///
+	/// The resulting [Stream] after this [Gatherer] will consist of one element of the current [Stream]
+	/// (while any elements remain), then an element from the interleaved [Stream] (while any elements remain).
+	///
+	/// If either [Stream] runs out of elements, then this [Gatherer] will keep taking elements only from the other
+	/// [Stream].
+	///
+	/// It is the caller's responsibility to close the interleaved [Stream], if that is necessary.
+	///
+	/// @param <T>    The type of elements in the stream.
+	/// @param stream the stream to interleave into the current stream.
+	/// @return a gatherer that combines interleaves elements from another stream into the current stream.
+	public static <T> Gatherer<T, ?, T> interleave(Stream<? extends T> stream) {
+		return new InterleavingGatherer<>(stream::iterator);
+	}
+
+	/// Returns a [Gatherer] that will interleave elements from an [Iterable] into the current [Stream].
+	///
+	/// The resulting [Stream] after this [Gatherer] will consist of one element of the current [Stream]
+	/// (while any elements remain), then an element from the interleaved [Iterable] (while any elements remain).
+	///
+	/// If either [Stream] runs out of elements, then this [Gatherer] will keep taking elements only from the other
+	/// [Stream].
+	///
+	/// @param <T>      The type of elements in the stream.
+	/// @param iterable the iterable to interleave into the current stream.
+	/// @return a gatherer that combines interleaves elements from an iterable into the current stream.
+	public static <T> Gatherer<T, ?, T> interleave(Iterable<T> iterable) {
+		return new InterleavingGatherer<>(iterable::iterator);
 	}
 
 	/// Returns a [Gatherer] that will filter out all elements in a stream that are not instances of a given [Class].
