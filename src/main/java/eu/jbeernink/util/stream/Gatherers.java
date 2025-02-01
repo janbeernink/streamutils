@@ -117,7 +117,7 @@ public final class Gatherers {
 	/// @param <T>   the type of elements in the [Stream].
 	/// @param <R>   the type of the elements that will be retained.
 	/// @return a [Gatherer] that will filter out all elements that aren't instances of `clazz`.
-	public static <T, R extends T> Gatherer<T, ?, R> filterInstancesOf(Class<R> clazz) {
+	public static <T, R extends T> Gatherer<T, ?, R> isInstanceOf(Class<R> clazz) {
 		return Gatherer.of((_, element, downstream) -> {
 			if (clazz.isInstance(element)) {
 				return downstream.push(clazz.cast(element));

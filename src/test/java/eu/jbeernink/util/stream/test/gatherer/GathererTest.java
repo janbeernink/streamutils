@@ -15,7 +15,7 @@
  */
 package eu.jbeernink.util.stream.test.gatherer;
 
-import static eu.jbeernink.util.stream.Gatherers.filterInstancesOf;
+import static eu.jbeernink.util.stream.Gatherers.isInstanceOf;
 import static eu.jbeernink.util.stream.Gatherers.groupWhile;
 import static eu.jbeernink.util.stream.Gatherers.interleave;
 import static eu.jbeernink.util.stream.Gatherers.randomOrder;
@@ -71,10 +71,10 @@ public class GathererTest {
 	}
 
 	@Test
-	@DisplayName("filterInstancesOf(Class) returns a gatherer which filters only the elements of a given type.")
-	void filterInstancesOf_returnsTypeFilteringGatherer() {
+	@DisplayName("isInstanceOf(Class) returns a gatherer which filters only the elements of a given type.")
+	void isInstanceOf_returnsTypeFilteringGatherer() {
 		List<String> elements = Stream.of(new Object(), 1, "test")
-		                              .gather(filterInstancesOf(String.class))
+		                              .gather(isInstanceOf(String.class))
 		                              .toList();
 
 		assertEquals(List.of("test"), elements);
